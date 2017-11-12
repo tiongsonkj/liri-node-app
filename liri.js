@@ -214,6 +214,8 @@ function doWhatItSays() {
 			// this will read the second of the array which is the name of the song
 			console.log(data[1]);
 
+			// if the first element in the txt is this specific function,
+			// then run that specific function
 			if (data[0] === "spotify-this-song") {
 				action = "spotify-this-song";
 				value = data[1];
@@ -223,9 +225,10 @@ function doWhatItSays() {
 				grabTweets();
 			} else if (data[0] === "movie-this") {
 				action = "movie-this";
+				value = data[1];
 				identifyMovie();
 			} else {
-				console.log("Sorry I do not recognize this action");
+				console.log("Sorry I do not recognize this action.");
 			}
 		}
 	});
