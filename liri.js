@@ -5,9 +5,12 @@ var twitterKeys = require("./keys.js");
 // set the process.argv[2] as a variable
 var action = process.argv[2];
 
+var value = process.argv[3];
+
 // require the npm twitter package
 var twitter = require('twitter');
 
+// twitter keys
 var client = new twitter({
   consumer_key: '75WTYslruY1x4V6TutRkkvZyf',
   consumer_secret: 'GVoRiXSnumsZbrzOqFm5h3h7MW5nSGGRQzrpqTrbsHlYJr02lF',
@@ -18,13 +21,37 @@ var client = new twitter({
 //require the npm spotify package
 var Spotify = require('node-spotify-api');
  
+// spotify keys
 var spotify = new Spotify({
   id: '2867a68e1a384f449c6427645b390bed',
   secret: '1bba95915dce48468fd1500ad0a148be'
 });
 
-// if action is equal to...
-if (action === "my-tweets") {
+// require the npm request package
+var request = require('request');
+
+// require the npm request package
+var fs = require("fs");
+
+switch (action) {
+	case "my-tweets":
+		grabTweets();
+		break;
+
+	case "spotify-this-song":
+		spotifySong();
+		break;
+
+	case "movie-this":
+		identifyMovie();
+		break;
+
+	case "do-what-it-says":
+		doWhatItSays();
+		break;
+}
+
+function grabTweets() {
 
 	// last 10 tweets
 	var params = {count: '10'};
@@ -42,8 +69,9 @@ if (action === "my-tweets") {
 		}	
 	  }
 	});
-} else if (action === "spotify-this-song") {
-	
+}
+
+function spotifySong() {
 	// Take in the command line arguments
 	var nodeArgs = process.argv;
 
@@ -96,12 +124,109 @@ if (action === "my-tweets") {
 		});
 	}
 }
-// if (action === "my-tweets") {
-// 	console.log("MY TWEETS");
-// } else if (action === "spotify-this-song") {
-// 	console.log("YOU'VE BEEN SPOTIFIED");
-// } else if (action === "movie-this") {
-// 	console.log("MOVIE HAS BEEN FOUND");
-// } else if (action === "do-what-it-says") {
-// 	console.log("WHAT AM I DOING?!");
-// }
+
+function identifyMovie() {
+	// Take in the command line arguments
+	var nodeArgs = process.argv;
+
+	// Create an empty string for holding the movie search query
+	var search = "";
+
+  	// Capture all the words in the address (again ignoring the first two Node arguments)
+	for (var i = 3; i < nodeArgs.length; i++) {
+
+	// Build a string with the address.
+	search = search + " " + nodeArgs[i];
+
+	}
+
+	if (!search) {
+		request('http://www.omdbapi.com/?apikey=40e9cece&t=Mr.+Nobody&y=&plot=short&r=json', function (error, response, body) {
+			if (error) {
+				return console.log("Error occured: " + error);
+			} else {
+
+				// grabbing the data and setting them as variables
+				var title = JSON.parse(body).Title;
+				var releaseDate = JSON.parse(body).Released;
+				var imdbRating = JSON.parse(body).imdbRating;
+				var rtRating = JSON.parse(body).Ratings[1].Value;
+				var country = JSON.parse(body).Country;
+				var language = JSON.parse(body).Language;
+				var plot = JSON.parse(body).Plot;
+				var actors = JSON.parse(body).Actors;
+
+				// console logging everything
+				console.log("Movie Title: " + title);
+				console.log("Movie Release Date: " + releaseDate);
+				console.log("IMDB Rating: " + imdbRating);
+				console.log("Rotten Tomatoes Rating: " + rtRating);
+				console.log("Country: " + country);
+				console.log("Language: " + language);
+				console.log("Plot of the movie: " + '"' + plot + '"');
+				console.log("Actors: " + actors);
+			}
+		});
+	} else {
+		request('http://www.omdbapi.com/?apikey=40e9cece&t='+search+'&y=&plot=short&r=json', function (error, response, body) {
+			if (error) {
+				return console.log("Error occured: " + error);
+			} else {
+
+				// grabbing the data and setting them as variables
+				var title = JSON.parse(body).Title;
+				var releaseDate = JSON.parse(body).Released;
+				var imdbRating = JSON.parse(body).imdbRating;
+				var rtRating = JSON.parse(body).Ratings[1].Value;
+				var country = JSON.parse(body).Country;
+				var language = JSON.parse(body).Language;
+				var plot = JSON.parse(body).Plot;
+				var actors = JSON.parse(body).Actors;
+
+				//console logging everything
+				console.log("Movie Title: " + title);
+				console.log("Movie Release Date: " + releaseDate);
+				console.log("IMDB Rating: " + imdbRating);
+				console.log("Rotten Tomatoes Rating: " + rtRating);
+				console.log("Country: " + country);
+				console.log("Language: " + language);
+				console.log("Plot of the movie: " + '"' + plot + '"');
+				console.log("Actors: " + actors);
+			}		
+		});
+	}
+}
+
+function doWhatItSays() {
+	fs.readFile("random.txt", "utf8", function(err, data) {
+		if (err) {
+			return console.log("Error occured: " + err);
+		} else {
+			
+			// breaks down and splits up the data inside the text.
+			data = data.split(",");
+
+			console.log(data);
+
+			// this reads the first of the array which is "spotify-this-song"
+			console.log(data[0]);
+
+			// this will read the second of the array which is the name of the song
+			console.log(data[1]);
+
+			if (data[0] === "spotify-this-song") {
+				action = "spotify-this-song";
+				value = data[1];
+				spotifySong();
+			} else if (data[0] === "my-tweets") {
+				action = "my-tweets";
+				grabTweets();
+			} else if (data[0] === "movie-this") {
+				action = "movie-this";
+				identifyMovie();
+			} else {
+				console.log("Sorry I do not recognize this action");
+			}
+		}
+	});
+}
