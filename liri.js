@@ -2,6 +2,7 @@
 // then store it as a variable
 var twitterKeys = require("./keys.js");
 
+// set the process.argv[2] as a variable
 var action = process.argv[2];
 
 var twitter = require('twitter');
@@ -20,6 +21,7 @@ var spotify = new Spotify({
   secret: '1bba95915dce48468fd1500ad0a148be'
 });
 
+// if action is equal to "my-tweets"
 if (action === "my-tweets") {
 	var params = {count: '10'};
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
@@ -35,21 +37,55 @@ if (action === "my-tweets") {
 	  }
 	});
 } else if (action === "spotify-this-song") {
-	spotify.search({ type: 'track', query: 'The Sign', limit: '1' }, function(err, data) {
-		if (err) {
-	    	return console.log('Error occurred: ' + err);
-	  	}
-	 
-		var artist = data.tracks.items[0].album.artists[0].name;
-	 	var songName = data.tracks.items[0].name;
-	 	var link = data.tracks.items[0].external_urls.spotify;
-	 	var albumName = data.tracks.items[0].album.name;
+	
+	// Take in the command line arguments
+	var nodeArgs = process.argv;
 
-	 	console.log(artist);
-	 	console.log(songName);
-	 	console.log(link);
-	 	console.log(albumName);
-	});
+	// Create an empty string for holding the song query
+	var query = "";
+
+  	// Capture all the words in the address (again ignoring the first two Node arguments)
+	for (var i = 3; i < nodeArgs.length; i++) {
+
+	// Build a string with the address.
+	query = query + " " + nodeArgs[i];
+
+	}
+
+	if (!query) {
+		spotify.search({ type: 'track', query: 'The Sign', limit: '1' }, function(err, data) {
+			if (err) {
+		    	return console.log('Error occurred: ' + err);
+		  	} else {
+		 
+				var artist = data.tracks.items[0].album.artists[0].name;
+			 	var songName = data.tracks.items[0].name;
+			 	var link = data.tracks.items[0].external_urls.spotify;
+			 	var albumName = data.tracks.items[0].album.name;
+
+			 	console.log(artist);
+			 	console.log(songName);
+			 	console.log(link);
+			 	console.log(albumName);
+		 	}
+		});
+	} else {
+		spotify.search({ type: 'track', query: query, limit: '1' }, function(err, data) {
+			if (err) {
+		    	return console.log('Error occurred: ' + err);
+		  	}
+		 
+			var artist = data.tracks.items[0].album.artists[0].name;
+		 	var songName = data.tracks.items[0].name;
+		 	var link = data.tracks.items[0].external_urls.spotify;
+		 	var albumName = data.tracks.items[0].album.name;
+
+		 	console.log(artist);
+		 	console.log(songName);
+		 	console.log(link);
+		 	console.log(albumName);
+		});
+	}
 }
 // if (action === "my-tweets") {
 // 	console.log("MY TWEETS");
