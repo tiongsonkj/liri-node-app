@@ -19,35 +19,38 @@ var spotify = new Spotify({
   id: '2867a68e1a384f449c6427645b390bed',
   secret: '1bba95915dce48468fd1500ad0a148be'
 });
- 
-spotify.search({ type: 'track', query: 'Free Fallin', limit: '1' }, function(err, data) {
-  if (err) {
-    return console.log('Error occurred: ' + err);
-  }
- 
- var artist = data.tracks.items[0].album.artists[0].name;
- var songName = data.tracks.items[0].name;
- var link = data.tracks.items[0].external_urls.spotify;
-// console.log(JSON.stringify(data, null, 2));
-// console.log(data.tracks);
-console.log(data.tracks.items[0].external_urls.spotify);
-});
 
-// if (action === "my-tweets") {
-// 	var params = {count: '10'};
-// 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
-// 	  if (error) {
-// 	  	console.log(error);
-// 	  } else {
-// 	  	for (var key in tweets) {
-// 		  	console.log("------------------------------");
-// 		    console.log('"' + tweets[key].text + '"');
-// 		    console.log("Date tweeted: " + tweets[key].created_at);
-// 		    console.log("------------------------------");
-// 		}	
-// 	  }
-// 	});
-// }
+if (action === "my-tweets") {
+	var params = {count: '10'};
+	client.get('statuses/user_timeline', params, function(error, tweets, response) {
+	  if (error) {
+	  	console.log(error);
+	  } else {
+	  	for (var key in tweets) {
+		  	console.log("------------------------------");
+		    console.log('"' + tweets[key].text + '"');
+		    console.log("Date tweeted: " + tweets[key].created_at);
+		    console.log("------------------------------");
+		}	
+	  }
+	});
+} else if (action === "spotify-this-song") {
+	spotify.search({ type: 'track', query: 'The Sign', limit: '1' }, function(err, data) {
+		if (err) {
+	    	return console.log('Error occurred: ' + err);
+	  	}
+	 
+		var artist = data.tracks.items[0].album.artists[0].name;
+	 	var songName = data.tracks.items[0].name;
+	 	var link = data.tracks.items[0].external_urls.spotify;
+	 	var albumName = data.tracks.items[0].album.name;
+
+	 	console.log(artist);
+	 	console.log(songName);
+	 	console.log(link);
+	 	console.log(albumName);
+	});
+}
 // if (action === "my-tweets") {
 // 	console.log("MY TWEETS");
 // } else if (action === "spotify-this-song") {
