@@ -5,6 +5,7 @@ var twitterKeys = require("./keys.js");
 // set the process.argv[2] as a variable
 var action = process.argv[2];
 
+// require the npm twitter package
 var twitter = require('twitter');
 
 var client = new twitter({
@@ -14,6 +15,7 @@ var client = new twitter({
   access_token_secret: '4EcYWptj1eWpFZGzDvsEaB6PvM9VpQ1vTS61FBuyvkVA9'
 });
 
+//require the npm spotify package
 var Spotify = require('node-spotify-api');
  
 var spotify = new Spotify({
@@ -21,9 +23,13 @@ var spotify = new Spotify({
   secret: '1bba95915dce48468fd1500ad0a148be'
 });
 
-// if action is equal to "my-tweets"
+// if action is equal to...
 if (action === "my-tweets") {
+
+	// last 10 tweets
 	var params = {count: '10'};
+
+	// get the tweets
 	client.get('statuses/user_timeline', params, function(error, tweets, response) {
 	  if (error) {
 	  	console.log(error);
@@ -52,21 +58,23 @@ if (action === "my-tweets") {
 
 	}
 
+	// if there is no query spotify 'The Sign', else spotify the query search
 	if (!query) {
 		spotify.search({ type: 'track', query: 'The Sign', limit: '1' }, function(err, data) {
 			if (err) {
 		    	return console.log('Error occurred: ' + err);
 		  	} else {
-		 
+		 		
+		 		// setting the data grabbed as elements
 				var artist = data.tracks.items[0].album.artists[0].name;
 			 	var songName = data.tracks.items[0].name;
 			 	var link = data.tracks.items[0].external_urls.spotify;
 			 	var albumName = data.tracks.items[0].album.name;
 
-			 	console.log(artist);
-			 	console.log(songName);
-			 	console.log(link);
-			 	console.log(albumName);
+			 	console.log("Artist Name: " + artist);
+			 	console.log("Song Name: " + songName);
+			 	console.log("Spotify Link: " + link);
+			 	console.log("Album Name: " + albumName);
 		 	}
 		});
 	} else {
@@ -75,15 +83,16 @@ if (action === "my-tweets") {
 		    	return console.log('Error occurred: ' + err);
 		  	}
 		 
+		 	// setting the data grabbed as elements
 			var artist = data.tracks.items[0].album.artists[0].name;
 		 	var songName = data.tracks.items[0].name;
 		 	var link = data.tracks.items[0].external_urls.spotify;
 		 	var albumName = data.tracks.items[0].album.name;
 
-		 	console.log(artist);
-		 	console.log(songName);
-		 	console.log(link);
-		 	console.log(albumName);
+			console.log("Artist Name: " + artist);
+			console.log("Song Name: " + songName);
+			console.log("Spotify Link: " + link);
+			console.log("Album Name: " + albumName);
 		});
 	}
 }
