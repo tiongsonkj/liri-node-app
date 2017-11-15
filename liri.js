@@ -11,12 +11,7 @@ var value = process.argv[3];
 var twitter = require('twitter');
 
 // twitter keys
-var client = new twitter({
-  consumer_key: '75WTYslruY1x4V6TutRkkvZyf',
-  consumer_secret: 'GVoRiXSnumsZbrzOqFm5h3h7MW5nSGGRQzrpqTrbsHlYJr02lF',
-  access_token_key: '451296932-ZOjjB8CVliiQk6HpB612VlKQrk0tnpdlBjeeyG74',
-  access_token_secret: '4EcYWptj1eWpFZGzDvsEaB6PvM9VpQ1vTS61FBuyvkVA9'
-});
+var client = new twitter(twitterKeys);
 
 //require the npm spotify package
 var Spotify = require('node-spotify-api');
@@ -81,13 +76,14 @@ function spotifySong() {
   	// Capture all the words in the address (again ignoring the first two Node arguments)
 	for (var i = 3; i < nodeArgs.length; i++) {
 
-	// Build a string with the address.
-	query = query + " " + nodeArgs[i];
+		// Build a string with the address.
+		query = query + " " + nodeArgs[i];
 
+		// setting query to value which is process.argv[3]
+		value = query;
 	}
-
 	// if there is no query spotify 'The Sign', else spotify the query search
-	if (!query) {
+	if (!value) {
 		spotify.search({ type: 'track', query: 'The Sign', limit: '1' }, function(err, data) {
 			if (err) {
 		    	return console.log('Error occurred: ' + err);
@@ -106,7 +102,7 @@ function spotifySong() {
 		 	}
 		});
 	} else {
-		spotify.search({ type: 'track', query: query, limit: '1' }, function(err, data) {
+		spotify.search({ type: 'track', query: value, limit: '1' }, function(err, data) {
 			if (err) {
 		    	return console.log('Error occurred: ' + err);
 		  	}
@@ -135,12 +131,15 @@ function identifyMovie() {
   	// Capture all the words in the address (again ignoring the first two Node arguments)
 	for (var i = 3; i < nodeArgs.length; i++) {
 
-	// Build a string with the address.
-	search = search + " " + nodeArgs[i];
+		// Build a string with the address.
+		search = search + " " + nodeArgs[i];
+
+		// setting search to value which is process.argv[3]
+		value = search;
 
 	}
 
-	if (!search) {
+	if (!value) {
 		request('http://www.omdbapi.com/?apikey=40e9cece&t=Mr.+Nobody&y=&plot=short&r=json', function (error, response, body) {
 			if (error) {
 				return console.log("Error occured: " + error);
@@ -168,7 +167,7 @@ function identifyMovie() {
 			}
 		});
 	} else {
-		request('http://www.omdbapi.com/?apikey=40e9cece&t='+search+'&y=&plot=short&r=json', function (error, response, body) {
+		request('http://www.omdbapi.com/?apikey=40e9cece&t='+value+'&y=&plot=short&r=json', function (error, response, body) {
 			if (error) {
 				return console.log("Error occured: " + error);
 			} else {
@@ -206,19 +205,12 @@ function doWhatItSays() {
 			// breaks down and splits up the data inside the text.
 			data = data.split(",");
 
-			console.log(data);
-
-			// this reads the first of the array which is "spotify-this-song"
-			console.log(data[0]);
-
-			// this will read the second of the array which is the name of the song
-			console.log(data[1]);
-
 			// if the first element in the txt is this specific function,
 			// then run that specific function
 			if (data[0] === "spotify-this-song") {
 				action = "spotify-this-song";
 				value = data[1];
+				process.argv[3] = value;
 				spotifySong();
 			} else if (data[0] === "my-tweets") {
 				action = "my-tweets";
@@ -226,6 +218,7 @@ function doWhatItSays() {
 			} else if (data[0] === "movie-this") {
 				action = "movie-this";
 				value = data[1];
+				process.argv[3] = value;
 				identifyMovie();
 			} else {
 				console.log("Sorry I do not recognize this action.");
